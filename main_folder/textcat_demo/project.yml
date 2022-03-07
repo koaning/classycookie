@@ -98,7 +98,7 @@ commands:
   - name: "evaluate"
     help: "Evaluate the model and export metrics"
     script:
-      - "python scripts/evaluate.py assets/docs_issues_eval.jsonl"
+      - "python scripts/evaluate.py assets/${vars.dev} assets/${vars.train}"
     deps:
       - "assets/${vars.dev}"
       - "sklearn-trained/pipe_cv.joblib"
