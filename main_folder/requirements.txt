@@ -1,0 +1,4 @@
+spacy==3.2.3
+scikit-learn==1.0.2
+rich==11.2.0
+clumper==0.2.15
