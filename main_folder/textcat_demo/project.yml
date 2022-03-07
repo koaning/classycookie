@@ -70,7 +70,7 @@ commands:
   - name: "train-spacy"
     help: "Train the spaCy models"
     script:
-      # - "python -m spacy train configs/${vars.config_cnn} --output training/cnn/ --paths.train corpus/train.spacy --paths.dev corpus/dev.spacy --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
+      - "python -m spacy train configs/${vars.config_cnn} --output training/cnn/ --paths.train corpus/train.spacy --paths.dev corpus/dev.spacy --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
       - "python -m spacy train configs/${vars.config_bow} --output training/bow/ --paths.train corpus/train.spacy --paths.dev corpus/dev.spacy --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
     deps:
       - "configs/${vars.config_bow}"
