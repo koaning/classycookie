@@ -23,7 +23,11 @@ This data will be modelled in four different ways.
 To set up this project, you only need to clone the spaCy project. 
 
 ```
-python -m spacy project clone --repo https://github.com/koaning/classycookie classification
+python -m spacy project clone \
+  --repo https://github.com/koaning/classycookie \
+  --branch main \
+  classification \
+  <folder-name>
 ```
 ## 📋 project.yml
 
