@@ -18,6 +18,13 @@ This data will be modelled in four different ways.
 3. a scikit-learn countvectorizer logistic classifier
 4. a scikit-learn tf/idf logistic classifier
 
+## Setup 
+
+To set up this project, you only need to clone the spaCy project. 
+
+```
+python -m spacy project clone --repo https://github.com/koaning/classycookie classification
+```
 ## 📋 project.yml
 
 The [`project.yml`](project.yml) defines the data assets required by the

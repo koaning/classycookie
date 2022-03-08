@@ -32,6 +32,7 @@ def main(valid_data: Path, train_data: Path):
     table.add_column("Valid Score", justify="left", style="magenta")
     table.add_column("Time Taken", justify="left", style="magenta")
 
+    # Evaluate the scikit-learn models
     for mod in sklearn_models:
         pipe = load(mod)
         t0 = time.time()
@@ -45,6 +46,7 @@ def main(valid_data: Path, train_data: Path):
             str(t1 - t0)
         )
     
+    # Evaluate the scikit-learn models
     spacy_models = Path("training").glob("*/model-best")
     for mod in spacy_models:
         nlp = spacy.load(mod)

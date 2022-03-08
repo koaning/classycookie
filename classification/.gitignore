@@ -1,0 +1,6 @@
+corpus
+packages
+training
+sklearn-trained
+project.lock
+assets/*.jsonl
