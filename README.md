@@ -1,14 +1,6 @@
 <img src="cookie.png" width="150" height="150" align="right" />
 
-<small>
-This project started as a cookie cutter template, but then
-I realized that spaCy already handles this use-case. d0h!
-
-
-Anyway, that's how the project got it's name.
-</small>
-
-# 🪐 spaCy Project: Basic Text Classification Benchmarks
+# 🪐 spaCy Project: classycookie
 
 Text classification benchmarks with scikit-learn and spaCy v3.
 
@@ -25,7 +17,6 @@ This data will be modelled in four different ways.
 2. a spaCy CNN model. 
 3. a scikit-learn countvectorizer logistic classifier
 4. a scikit-learn tf/idf logistic classifier
-
 
 ## 📋 project.yml
 
@@ -69,5 +60,20 @@ in the project directory.
 | [`assets/data.csv`](assets/data.csv) | Local | Original `.csv` file. |
 
 This project comes with a copy of the [clinc dataset](https://github.com/clinc/oos-eval) that you can replace at will. 
+
+### End Result 
+
+The final result of the project will be a summary table like this one:
+
+```
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+┃ Model                      ┃ Train Score ┃ Valid Score ┃ Time Taken          ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
+│ sklearn-trained/pipe_tfid… │ 0.9262      │ 0.8582      │ 0.15783333778381348 │
+│ sklearn-trained/pipe_cv.j… │ 0.9866      │ 0.8955      │ 0.14619827270507812 │
+│ training/cnn/model-best    │ 0.9867      │ 0.8723      │ 3.962278127670288   │
+│ training/bow/model-best    │ 0.9867      │ 0.8723      │ 4.037751197814941   │
+└────────────────────────────┴─────────────┴─────────────┴─────────────────────┘
+```
 
 <!-- SPACY PROJECT: AUTO-GENERATED DOCS END (do not remove) -->

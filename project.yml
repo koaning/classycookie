@@ -1,5 +1,5 @@
-title: "Demo Textcat (Text Classification)"
-description: "A minimal demo textcat project for spaCy v3."
+title: "Basic Text Classification Benchmarks"
+description: "Text classification benchmarks with scikit-learn and spaCy v3."
 # Variables can be referenced across the project.yml using ${vars.var_name}
 vars:
   name: "textcat_demo"
@@ -8,27 +8,25 @@ vars:
   lang: "en"
   # Set your GPU ID, -1 is CPU
   gpu_id: -1
-  version: "0.0.0"
-  train: "docs_issues_training.jsonl"
-  dev: "docs_issues_eval.jsonl"
+  version: "0.1.0"
   csv_file: "data.csv"
+  train_jsonl: "docs_issues_training.jsonl"
+  valid_jsonl: "docs_issues_eval.jsonl"
+  train_spacy: "docs_issues_training.spacy"
+  valid_spacy: "docs_issues_eval.spacy"
   config_cnn: "config-cnn.cfg"
   config_bow: "config-bow.cfg"
   sklearn_trained_folder: "sklearn-trained"
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
-directories: ["assets", "corpus", "configs", "training", "scripts", "packages"]
+directories: ["assets", "corpus", "configs", "training", "scripts", "sklearn-trained"]
 
 # Assets that should be downloaded or available in the directory. We're shipping
 # them with the project, so they won't have to be downloaded.
 assets:
   - dest: "assets/${vars.csv_file}"
     description: "Original `.csv` file."
-  - dest: "assets/${vars.train}"
-    description: "Demo training data."
-  - dest: "assets/${vars.dev}"
-    description: "Demo development data."
 
 # Workflows are sequences of commands (see below) executed in order. You can
 # run them via "spacy project run [workflow]". If a commands's inputs/outputs
@@ -49,34 +47,34 @@ commands:
   - name: "prepare"
     help: "Prepare the .csv for the next steps"
     script:
-      - "python scripts/prepare.py assets/${vars.csv_file} assets/${vars.train} assets/${vars.dev}"
+      - "python scripts/prepare.py assets/${vars.csv_file} assets/${vars.train_jsonl} assets/${vars.valid_jsonl}"
     outputs:
-      - "assets/${vars.train}"
-      - "assets/${vars.dev}"
+      - "assets/${vars.train_jsonl}"
+      - "assets/${vars.valid_jsonl}"
 
   - name: "convert"
     help: "Convert the data to spaCy's binary format"
     script:
-      - "python scripts/convert.py ${vars.lang} assets/${vars.train} corpus/train.spacy"
-      - "python scripts/convert.py ${vars.lang} assets/${vars.dev} corpus/dev.spacy"
+      - "python scripts/convert.py ${vars.lang} assets/${vars.train_jsonl} corpus/${vars.train_spacy}"
+      - "python scripts/convert.py ${vars.lang} assets/${vars.valid_jsonl} corpus/${vars.valid_spacy}"
     deps:
-      - "assets/${vars.train}"
-      - "assets/${vars.dev}"
+      - "assets/${vars.train_jsonl}"
+      - "assets/${vars.valid_jsonl}"
       - "scripts/convert.py"
     outputs:
-      - "corpus/train.spacy"
-      - "corpus/dev.spacy"
+      - "corpus/${vars.train_spacy}"
+      - "corpus/${vars.valid_spacy}"
 
   - name: "train-spacy"
-    help: "Train the spaCy models"
+    help: "Train the scikit-learn models"
     script:
-      - "python -m spacy train configs/${vars.config_cnn} --output training/cnn/ --paths.train corpus/train.spacy --paths.dev corpus/dev.spacy --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
-      - "python -m spacy train configs/${vars.config_bow} --output training/bow/ --paths.train corpus/train.spacy --paths.dev corpus/dev.spacy --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
+      - "python -m spacy train configs/${vars.config_cnn} --output training/cnn/ --paths.train corpus/${vars.train_spacy} --paths.dev corpus/${vars.valid_spacy} --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
+      - "python -m spacy train configs/${vars.config_bow} --output training/bow/ --paths.train corpus/${vars.train_spacy} --paths.dev corpus/${vars.valid_spacy} --nlp.lang ${vars.lang} --gpu-id ${vars.gpu_id}"
     deps:
       - "configs/${vars.config_bow}"
       - "configs/${vars.config_cnn}"
-      - "corpus/train.spacy"
-      - "corpus/dev.spacy"
+      - "corpus/${vars.train_spacy}"
+      - "corpus/${vars.valid_spacy}"
     outputs:
       - "training/bow/model-best"
       - "training/cnn/model-best"
@@ -84,8 +82,8 @@ commands:
   - name: "train-sklearn"
     help: "Train the spaCy models"
     script:
-      - "python scripts/train-sklearn.py assets/${vars.train} ${vars.sklearn_trained_folder} cv"
-      - "python scripts/train-sklearn.py assets/${vars.train} ${vars.sklearn_trained_folder} tfidf"
+      - "python scripts/train-sklearn.py assets/${vars.train_jsonl} ${vars.sklearn_trained_folder} cv"
+      - "python scripts/train-sklearn.py assets/${vars.train_jsonl} ${vars.sklearn_trained_folder} tfidf"
     deps:
       - "configs/${vars.config_bow}"
       - "configs/${vars.config_cnn}"
@@ -98,17 +96,9 @@ commands:
   - name: "evaluate"
     help: "Evaluate the model and export metrics"
     script:
-      - "python scripts/evaluate.py assets/${vars.dev} assets/${vars.train}"
+      - "python scripts/evaluate.py assets/${vars.valid_jsonl} assets/${vars.train_jsonl}"
     deps:
-      - "assets/${vars.dev}"
+      - "assets/${vars.valid_jsonl}"
+      - "assets/${vars.train_jsonl}"
       - "sklearn-trained/pipe_cv.joblib"
       - "sklearn-trained/pipe_tfidf.joblib"
-
-  - name: package
-    help: "Package the trained model as a pip package"
-    script:
-      - "python -m spacy package training/model-best packages --name ${vars.name} --version ${vars.version} --force"
-    deps:
-      - "training/model-best"
-    outputs_no_cache:
-      - "packages/${vars.lang}_${vars.name}-${vars.version}/dist/${vars.lang}_${vars.name}-${vars.version}.tar.gz"
