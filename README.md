@@ -1,4 +1,4 @@
-<img src="cookie.png" width="150" height="150" align="right" />
+<img src="cookie.png" width="120" height="120" align="right" />
 
 # 🪐 spaCy Project: classycookie
 
